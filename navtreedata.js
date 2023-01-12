@@ -25,24 +25,7 @@
 var NAVTREE =
 [
   [ "RBE 1001 Group 13", "index.html", [
-    [ "Main Page", "index.html", null ],
-    [ "Customization", "md_docs_doxygen_awesome_css_docs_customization.html", null ],
-    [ "Extensions", "md_docs_doxygen_awesome_css_docs_extensions.html", null ],
-    [ "Tips & Tricks", "md_docs_doxygen_awesome_css_docs_tricks.html", null ],
-    [ "Doxygen Awesome", "md_docs_doxygen_awesome_css__r_e_a_d_m_e.html", null ],
     [ "RBE 1001 Group 13", "md__r_e_a_d_m_e.html", null ],
-    [ "Bug List", "bug.html", null ],
-    [ "Deprecated List", "deprecated.html", null ],
-    [ "Todo List", "todo.html", null ],
-    [ "Classes", "annotated.html", [
-      [ "Class List", "annotated.html", "annotated_dup" ],
-      [ "Class Index", "classes.html", null ],
-      [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
-      [ "Class Members", "functions.html", [
-        [ "All", "functions.html", null ],
-        [ "Functions", "functions_func.html", null ]
-      ] ]
-    ] ],
     [ "Files", "files.html", [
       [ "File List", "files.html", "files_dup" ]
     ] ]
@@ -51,7 +34,7 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"annotated.html"
+"dir_d44c64559bbebec7f509842c48db8b23.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
