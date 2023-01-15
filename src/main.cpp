@@ -8,6 +8,10 @@
 /*----------------------------------------------------------------------------*/
 
 // ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// leftMotor            motor         10              
+// rightMotor           motor         1               
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -18,15 +22,17 @@ const float wheelDiameter = 4.0f;
 const float wheelCircumference = 3.14 * wheelDiameter;
 const float gearRatio = 5.0f;
 const float wheelTrack = 11.0f;
+const float degreesPerInch = 360.0f / wheelCircumference;
 
 void driveStraight (float inches) {
+    
     leftMotor.spinFor(forward, gearRatio * inches * degreesPerInch, degrees, false);
     rightMotor.spinFor(forward, gearRatio * inches * degreesPerInch, degrees, true);
 }
 
 void turnRight (float targetDegrees) {
     float rotationDegrees = targetDegrees * gearRatio * wheelTrack / wheelDiameter;
-    leftMotor.spinFor(forward, rotationDegrees, degress, false);
+    leftMotor.spinFor(forward, rotationDegrees, degrees, false);
     rightMotor.spinFor(reverse, rotationDegrees, degrees, true);
 }
 
@@ -35,5 +41,6 @@ int main() {
     vexcodeInit();
     // Brain.Screen.print("Hello, world!");
     driveStraight(10);
+    
     turnRight(90);
 }
