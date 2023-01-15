@@ -17,4 +17,5 @@ using namespace vex;
 int main() {
     // Initializing Robot Configuration. DO NOT REMOVE!
     vexcodeInit();
+    Brain.Screen.print("Hello, world!");
 }
