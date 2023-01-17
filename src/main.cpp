@@ -35,12 +35,19 @@ void turnRight (float targetDegrees) {
     leftMotor.spinFor(forward, rotationDegrees, degrees, false);
     rightMotor.spinFor(reverse, rotationDegrees, degrees, true);
 }
+void polygon (int sides, float sideLength) {
+    for (int i = 0; i < sides; i++) {
+        driveStraight(sideLength);
+        turnRight(360.0f / sides + 2.0f);
+    }
+}
 
 int main() {
     // Initializing Robot Configuration. DO NOT REMOVE!
     vexcodeInit();
     // Brain.Screen.print("Hello, world!");
-    driveStraight(10);
+    // driveStraight(10);
     
-    turnRight(90);
+    // turnRight(90);
+    polygon(5, 7.87402f);
 }
