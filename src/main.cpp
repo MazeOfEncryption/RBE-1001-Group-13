@@ -1,11 +1,3 @@
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// leftMotor            motor         10              
-// rightMotor           motor         1               
-// leftLineTracker      line          C               
-// rightLineTracker     line          D               
-// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -15,6 +7,15 @@
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// leftMotor            motor         10              
+// rightMotor           motor         1               
+// leftLineTracker      line          C               
+// rightLineTracker     line          D               
+// rangeFinder          sonar         A, B            
+// ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
 
