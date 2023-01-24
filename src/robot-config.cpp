@@ -12,6 +12,7 @@ motor leftMotor = motor(PORT10, ratio18_1, true);
 motor rightMotor = motor(PORT1, ratio18_1, false);
 line leftLineTracker = line(Brain.ThreeWirePort.C);
 line rightLineTracker = line(Brain.ThreeWirePort.D);
+sonar rangeFinder = sonar(Brain.ThreeWirePort.A);
 
 // VEXcode generated functions
 

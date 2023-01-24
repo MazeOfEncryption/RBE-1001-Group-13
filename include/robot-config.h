@@ -7,6 +7,7 @@ extern motor leftMotor;
 extern motor rightMotor;
 extern line leftLineTracker;
 extern line rightLineTracker;
+extern sonar rangeFinder;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

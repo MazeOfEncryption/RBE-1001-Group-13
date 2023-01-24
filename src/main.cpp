@@ -12,6 +12,9 @@
 // [Name]               [Type]        [Port(s)]
 // leftMotor            motor         10              
 // rightMotor           motor         1               
+// leftLineTracker      line          C               
+// rightLineTracker     line          D               
+// rangeFinder          sonar         A, B            
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
 #include "vex.h"
@@ -23,7 +26,8 @@ int main() {
         Brain.Screen.clearScreen();
         Brain.Screen.setCursor(1, 1);
         Brain.Screen.print("Left: %d  ", leftLineTracker.reflectivity());
-        Brain.Screen.print("Right: %d", rightLineTracker.reflectivity());
+        Brain.Screen.print("Right: %d  ", rightLineTracker.reflectivity());
+        Brain.Screen.print("Distance: %f", rangeFinder.distance(distanceUnits::in));
         vexDelay(50);
     }
 }
