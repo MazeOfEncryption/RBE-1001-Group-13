@@ -61,13 +61,11 @@ void drive(float speed, float direction) {
     rightMotor.spin(fwd);
 }
 
-void followLine (float distance) {
-    // Distance is in inches
-    // TODO use ultrasonic sensor for stop condition
-    int distanceRaw = (int)(countsPerInch * distance);
+// Follows a line until the range finder is within `stopDistance` of a wall
+void followLine (float stopDistance) {
     leftMotor.resetRotation();
     rightMotor.resetPosition();
-    while (leftMotor.rotation(rotationUnits::raw) < distanceRaw) {
+    while (rangeFinder.distance(distanceUnits::in) > stopDistance) {
         float error = leftLineTracker.reflectivity() - rightLineTracker.reflectivity();
         drive(speed, error * lineFollowing_kP);
     }
@@ -78,5 +76,10 @@ void followLine (float distance) {
 int main() {
     // Initializing Robot Configuration. DO NOT REMOVE!
     vexcodeInit();
-    followLine(20); // temporary - later, use ultrasonic sensor for stop condition
+
+    followLine(9.3); // Stop when 9.3 inches away from the wall
+    // turnRight(-92);
+    // followLine(2.0);
+    // turnRight(-92);
+    // followLine(9.3);
 }
