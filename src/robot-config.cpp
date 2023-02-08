@@ -10,6 +10,12 @@ brain  Brain;
 // VEXcode device constructors
 motor leftMotor = motor(PORT10, ratio18_1, true);
 motor rightMotor = motor(PORT1, ratio18_1, false);
+/*vex-vision-config:begin*/
+signature VisionSensor__RED_BALL = signature (1, 9729, 11109, 10419, -821, -465, -643, 2.5, 0);
+signature VisionSensor__BLUE_BALL = signature (2, -2357, -1731, -2044, 10313, 12637, 11475, 2.5, 0);
+signature VisionSensor__YELLOW_BALL = signature (3, 253, 771, 512, -3501, -2875, -3188, 2.5, 0);
+vision VisionSensor = vision (PORT7, 50, VisionSensor__RED_BALL, VisionSensor__BLUE_BALL, VisionSensor__YELLOW_BALL);
+/*vex-vision-config:end*/
 
 // VEXcode generated functions
 
