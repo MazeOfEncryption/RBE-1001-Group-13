@@ -6,6 +6,14 @@
 // VisionSensor         vision        7               
 // rangeFinder          sonar         A, B            
 // ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// leftMotor            motor         10              
+// rightMotor           motor         1               
+// VisionSensor         vision        7               
+// rangeFinder          sonar         A, B            
+// ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
 /*    Module:       main.cpp                                                  */
@@ -22,14 +30,14 @@ using namespace vex;
 const float pi = 3.14159265359;
 
 const float kP_angle = 1.0f;
-const float kP_distance = 10.0f;
+const float kP_distance = 50.0f;
 
 const float resolutionX = 316; // Pixels
 const float resolutionY = 212; // Pixels
 const int centerX = 157; // Pixels
 const int centerY = 105; // Pixels
 
-const float followDistance = 10.0f; // inches
+const float followDistance = 6.0f; // inches
 
 const float ballRadius = 1; // inche
 const float cameraHeight = 2.75; // inches
@@ -37,7 +45,7 @@ const float horizontalFOV = 47; // degrees
 const float degreesPerPixelY = horizontalFOV / resolutionY;
 
 float distanceToBall(float height) {
-    return (ballRadius - cameraHeight) / atan(degreesPerPixelY * (height - centerY) * pi / 180.0f);
+    return (ballRadius - cameraHeight) / tan(-degreesPerPixelY * (height - centerY) * pi / 180.0f);
 }
 
 // Returns true if RED_BALL is detected and false if not,
@@ -51,6 +59,8 @@ bool DetectObject() {
     Brain.Screen.print("Width: %d ", VisionSensor.largestObject.width);
     Brain.Screen.print("Distance: %f", distanceToBall(VisionSensor.largestObject.centerY));
     if (VisionSensor.objectCount > 0) {
+        // Return false if ball is out of range (too close or too far away from the vision sensor)
+        if (VisionSensor.largestObject.centerY < 135 || VisionSensor.largestObject.centerY > 200) return false;
         return true;
     } else return false;
 }
@@ -68,14 +78,15 @@ int main() {
     vexcodeInit();
     vexDelay(500); // wait half a second for ultrasonic sensor to initialize
     while (true) {
-        // Only drive if a ball is detected
+        // Make sure that an object is detected
         if (DetectObject()) {
             float error_angle = centerX - VisionSensor.largestObject.centerX;
-            float distance = rangeFinder.distance(distanceUnits::in);
+            // float distance = rangeFinder.distance(distanceUnits::in);
+            float distance = distanceToBall(VisionSensor.largestObject.centerY);
             float error_distance = distance - followDistance;
             // drive(0, error_angle * kP_angle); // angle only
             // drive(error_distance * kP_distance, 0); // distance only
-            // drive(error_distance * kP_distance, error_angle * kP_angle); // both angle and distance
+            drive(error_distance * kP_distance, error_angle * kP_angle); // both angle and distance
         } else {
             // If no ball is detected, stop motors.
             leftMotor.stop(brake);
