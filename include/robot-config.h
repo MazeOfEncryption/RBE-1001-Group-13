@@ -15,6 +15,7 @@ extern signature VisionSensor__SIG_5;
 extern signature VisionSensor__SIG_6;
 extern signature VisionSensor__SIG_7;
 extern vision VisionSensor;
+extern sonar rangeFinder;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.
