@@ -19,11 +19,15 @@
 using namespace vex;
 
 const float wheelDiameter = 4.0f; // inches
-const float wheelCircumference = 3.14 * wheelDiameter; // inches 
+const float wheelCircumference = 3.14 * wheelDiameter; // inches
 const float gearRatio = 5.0f;
 const float wheelTrack = 11.0f; // inches
-const float degreesPerInch = 360.0f / wheelCircumference;
+const float speed = 70.0f; // RPM
+const float lineFollowing_kP = 1.0f;
 const float pctSpeed = 50;
+const float motorCountPerRev = 900.0f;
+const float countsPerInch = motorCountPerRev * gearRatio / wheelCircumference;
+
 // const float motorCountPerRev = 900.0f;
 // const float countsPerInch = motorCountPerRev * gearRatio / wheelCircumference;
 // const float baseVoltage = 6.0f;
