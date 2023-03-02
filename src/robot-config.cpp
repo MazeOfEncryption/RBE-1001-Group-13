@@ -13,11 +13,14 @@ motor rightMotor = motor(PORT1, ratio18_1, false);
 line leftLineTracker = line(Brain.ThreeWirePort.C);
 line rightLineTracker = line(Brain.ThreeWirePort.D);
 /*vex-vision-config:begin*/
-signature VisionSensor__RED_1 = signature (1, 7531, 9277, 8404, -551, -103, -327, 2.5, 0);
-vision VisionSensor = vision (PORT2, 50, VisionSensor__RED_1);
+signature VisionSensor__RED_1 = signature (1, 6681, 12025, 9354, -1281, -791, -1036, 2.5, 0);
+signature VisionSensor__BLUE_1 = signature (2, -2509, -1855, -2182, 7681, 13145, 10414, 2.5, 0);
+signature VisionSensor__YELLOW_1 = signature (3, 47, 909, 478, -3733, -3201, -3468, 2.5, 0);
+vision VisionSensor = vision (PORT2, 50, VisionSensor__RED_1, VisionSensor__BLUE_1, VisionSensor__YELLOW_1);
 /*vex-vision-config:end*/
 motor liftMotor = motor(PORT8, ratio18_1, false);
 motor intakeMotor = motor(PORT3, ratio18_1, false);
+sonar rangeFinderBack = sonar(Brain.ThreeWirePort.A);
 
 // VEXcode generated functions
 
