@@ -9,6 +9,30 @@
 // liftMotor            motor         8               
 // intakeMotor          motor         3               
 // rangeFinderBack      sonar         A, B            
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// leftMotor            motor         10              
+// rightMotor           motor         1               
+// leftLineTracker      line          C               
+// rightLineTracker     line          D               
+// VisionSensor         vision        2               
+// liftMotor            motor         8               
+// intakeMotor          motor         3               
+// rangeFinderBack      sonar         A, B            
+// ---- END VEXCODE CONFIGURED DEVICES ----
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// leftMotor            motor         10              
+// rightMotor           motor         1               
+// leftLineTracker      line          C               
+// rightLineTracker     line          D               
+// VisionSensor         vision        2               
+// liftMotor            motor         8               
+// intakeMotor          motor         3               
+// rangeFinderBack      sonar         A, B            
 // Controller1          controller                    
 // ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
@@ -117,24 +141,23 @@ bool DetectObject(signature &sig) {
     } else return false;
 }
 
-// This is horrible. Do not read it. All that you need to know is that it works.
+// Uses the vision sensor to line the robot up and approach a ball
 void approachBall (signature &sig) {
     while (DetectObject(sig)) {
         float error_distance = centerX - VisionSensor.largestObject.centerX;
         drive(-intakeDriveSpeed, error_distance *  kP_angle);
-        // intakeMotor.spin(forward, 100, velocityUnits::pct);
         vexDelay(30);
     }
     leftMotor.stop(brake);
     rightMotor.stop(brake);
-    // intakeMotor.stop(brake);
 }
+// Drives the robot towards the ball and intakes it
 void intakeBall () {
-    driveStraight(-4);
-    intakeMotor.spin(forward, 50, velocityUnits::pct);
+    driveStraight(-1);
+    // It's important that the intake mechanism turns the same amount for each ball,
+    // so that the intake paddles are lined up properly
+    intakeMotor.spinFor(1.0f, rotationUnits::rev, 50, velocityUnits::pct, false);
     driveStraight(-2);
-    vexDelay(50);
-    intakeMotor.stop(brake);
 }
 int main() {
     // Initializing Robot Configuration. DO NOT REMOVE!
@@ -142,6 +165,7 @@ int main() {
     vexDelay(500); // wait half a second for ultrasonic sensor to initialize
 
     // armUp();
+
     approachBall(VisionSensor__RED_1);
     intakeBall();
     turn(90);
@@ -150,6 +174,9 @@ int main() {
     turn(-30);
     approachBall(VisionSensor__RED_1);
     intakeBall();
+    intakeMotor.spin(forward);
+    vexDelay(500);
+    intakeMotor.stop(brake);
 
     // vexDelay(1000);
     // armDown();
