@@ -9,6 +9,7 @@
 // liftMotor            motor         8               
 // intakeMotor          motor         3               
 // rangeFinderBack      sonar         A, B            
+// Controller1          controller                    
 // ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
@@ -37,7 +38,7 @@ const float speed = 120.0f; // RPM
 const float lineFollowing_kP = 1.0f;
 const float kP_angle = 1.0f;
 const float pctSpeed = 50.0f;
-const float intakeDriveSpeed = 70.0f; // RPM
+const float intakeDriveSpeed = 130.0f; // RPM
 const float degreesPerInch = 360.0f / wheelCircumference;
 // const float motorCountPerRev = 900.0f;
 // const float countsPerInch = motorCountPerRev * gearRatio / wheelCircumference;
@@ -60,8 +61,8 @@ void turn (float targetDegrees) {
     // rightMotor.spinFor(reverse, rotationDegrees, degrees, true);
     // leftMotor.resetPosition();
     // leftmotor.spinTo();
-    leftMotor.spinFor(forward, rotationDegrees, degrees, pctSpeed, velocityUnits::pct, false);
-    rightMotor.spinFor(reverse, rotationDegrees, degrees, pctSpeed, velocityUnits::pct, true);
+    leftMotor.spinFor(reverse, rotationDegrees, degrees, pctSpeed, velocityUnits::pct, false);
+    rightMotor.spinFor(forward, rotationDegrees, degrees, pctSpeed, velocityUnits::pct, true);
 }
 
 // Drive forwards with a direction. A positive direction means steering left, and a negative direction means steering right
@@ -104,6 +105,9 @@ bool DetectObject(signature &sig) {
     Brain.Screen.print("x: %d ", VisionSensor.largestObject.centerX);
     Brain.Screen.print("y: %d ", VisionSensor.largestObject.centerY);
     Brain.Screen.print("Width: %d ", VisionSensor.largestObject.width);
+    std::cout << "x: " << VisionSensor.largestObject.centerX;
+    std::cout << " y: " << VisionSensor.largestObject.centerY;
+    std::cout << " width: " << VisionSensor.largestObject.width << std::endl;
     // Brain.Screen.print("Distance: %f", distanceToBall(VisionSensor.largestObject.centerY));
     // std::cout << VisionSensor.objectCount << std::endl;
     if (VisionSensor.objectCount > 0) {
@@ -114,22 +118,22 @@ bool DetectObject(signature &sig) {
 }
 
 // This is horrible. Do not read it. All that you need to know is that it works.
-void collectBall (signature &sig) {
-    int counter = 0;
-    while (counter++ < 50) {
-        if (DetectObject(sig)) counter = 0;
-        std::cout << "Counter: " << counter << " centerX: " << VisionSensor.largestObject.centerX << std::endl;
+void approachBall (signature &sig) {
+    while (DetectObject(sig)) {
         float error_distance = centerX - VisionSensor.largestObject.centerX;
-        if (VisionSensor.objectCount > 0) {
-            drive(-intakeDriveSpeed, error_distance *  kP_angle);
-        } else {
-            drive(-intakeDriveSpeed, 0);    
-        }
-        intakeMotor.spin(forward, 100, velocityUnits::pct);
+        drive(-intakeDriveSpeed, error_distance *  kP_angle);
+        // intakeMotor.spin(forward, 100, velocityUnits::pct);
         vexDelay(30);
     }
     leftMotor.stop(brake);
     rightMotor.stop(brake);
+    // intakeMotor.stop(brake);
+}
+void intakeBall () {
+    driveStraight(-4);
+    intakeMotor.spin(forward, 50, velocityUnits::pct);
+    driveStraight(-2);
+    vexDelay(50);
     intakeMotor.stop(brake);
 }
 int main() {
@@ -138,7 +142,15 @@ int main() {
     vexDelay(500); // wait half a second for ultrasonic sensor to initialize
 
     // armUp();
-    collectBall(VisionSensor__RED_1);
+    approachBall(VisionSensor__RED_1);
+    intakeBall();
+    turn(90);
+    approachBall(VisionSensor__BLUE_1);
+    intakeBall();
+    turn(-30);
+    approachBall(VisionSensor__RED_1);
+    intakeBall();
+
     // vexDelay(1000);
     // armDown();
     // vexDelay(1000);
