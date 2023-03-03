@@ -20,6 +20,7 @@ extern vision VisionSensor;
 extern motor liftMotor;
 extern motor intakeMotor;
 extern sonar rangeFinderBack;
+extern controller Controller1;
 
 /**
  * Used to initialize code/tasks/devices added using tools in VEXcode Pro.

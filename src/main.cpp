@@ -1,38 +1,14 @@
 // ---- START VEXCODE CONFIGURED DEVICES ----
 // Robot Configuration:
 // [Name]               [Type]        [Port(s)]
-// leftMotor            motor         10              
-// rightMotor           motor         1               
-// leftLineTracker      line          C               
-// rightLineTracker     line          D               
-// VisionSensor         vision        2               
+// leftMotor            motor         1               
+// rightMotor           motor         2               
+// leftLineTracker      line          G               
+// rightLineTracker     line          H               
+// VisionSensor         vision        20              
 // liftMotor            motor         8               
 // intakeMotor          motor         3               
-// rangeFinderBack      sonar         A, B            
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// leftMotor            motor         10              
-// rightMotor           motor         1               
-// leftLineTracker      line          C               
-// rightLineTracker     line          D               
-// VisionSensor         vision        2               
-// liftMotor            motor         8               
-// intakeMotor          motor         3               
-// rangeFinderBack      sonar         A, B            
-// ---- END VEXCODE CONFIGURED DEVICES ----
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// leftMotor            motor         10              
-// rightMotor           motor         1               
-// leftLineTracker      line          C               
-// rightLineTracker     line          D               
-// VisionSensor         vision        2               
-// liftMotor            motor         8               
-// intakeMotor          motor         3               
-// rangeFinderBack      sonar         A, B            
+// rangeFinderBack      sonar         E, F            
 // Controller1          controller                    
 // ---- END VEXCODE CONFIGURED DEVICES ----
 /*----------------------------------------------------------------------------*/
@@ -68,11 +44,11 @@ const float degreesPerInch = 360.0f / wheelCircumference;
 // const float countsPerInch = motorCountPerRev * gearRatio / wheelCircumference;
 
 // Function to drive forwards `distance` inches.
-void driveStraight (float distance) {
+void driveStraight (float distance, float speed = pctSpeed) {
     // leftMotor.spinFor(forward, gearRatio * distance * degreesPerInch, degrees, false);
     // rightMotor.spinFor(forward, gearRatio * distance * degreesPerInch, degrees, true);
-    leftMotor.spinFor(forward, gearRatio * distance * degreesPerInch, degrees, pctSpeed, velocityUnits::pct, false);
-    rightMotor.spinFor(forward, gearRatio * distance * degreesPerInch, degrees, pctSpeed, velocityUnits::pct, true);
+    leftMotor.spinFor(forward, gearRatio * distance * degreesPerInch, degrees, speed, velocityUnits::pct, false);
+    rightMotor.spinFor(forward, gearRatio * distance * degreesPerInch, degrees, speed, velocityUnits::pct, true);
 }
 
 // Turn until the robot has reached `targetDegrees` degrees.
@@ -85,26 +61,32 @@ void turn (float targetDegrees) {
     // rightMotor.spinFor(reverse, rotationDegrees, degrees, true);
     // leftMotor.resetPosition();
     // leftmotor.spinTo();
-    leftMotor.spinFor(reverse, rotationDegrees, degrees, pctSpeed, velocityUnits::pct, false);
-    rightMotor.spinFor(forward, rotationDegrees, degrees, pctSpeed, velocityUnits::pct, true);
+    leftMotor.spinFor(forward, rotationDegrees, degrees, pctSpeed, velocityUnits::pct, false);
+    rightMotor.spinFor(reverse, rotationDegrees, degrees, pctSpeed, velocityUnits::pct, true);
 }
 
 // Drive forwards with a direction. A positive direction means steering left, and a negative direction means steering right
 void drive(float speed, float direction) {
-    leftMotor.setVelocity(speed - direction, rpm);
-    rightMotor.setVelocity(speed + direction, rpm);
+    leftMotor.setVelocity(speed + direction, rpm);
+    rightMotor.setVelocity(speed - direction, rpm);
     leftMotor.spin(fwd);
     rightMotor.spin(fwd);
 }
 
-// Follows a line for `dist` inches
-void followLine (float dist) {
+// If rangeFinder is false: follow a line for `dist` inches
+// If rangeFinder is true: follow a line until the rangefinder is within `stopDist` inches of the wall
+void followLine (float dist, bool rangeFinder = false) {
     // Reset encoder counts on left and right motors
     leftMotor.resetRotation();
     rightMotor.resetPosition();
-    // Follow the line using proportional control until the range finder is within `stopDistance` inches of the wall
-    // while (rangeFinder.distance(distanceUnits::in) > stopDistance) {
-    while (leftMotor.position(rev) / gearRatio * wheelCircumference < dist) {
+    bool stopCondition = false;
+    while (!stopCondition) {
+        if (rangeFinder) {
+            stopCondition = rangeFinderBack.distance(distanceUnits::in) < dist;
+            std::cout << "Distance: " << rangeFinderBack.distance(distanceUnits::in) << std::endl;
+        } else {
+            stopCondition = leftMotor.position(rev) / gearRatio * wheelCircumference > dist;
+        }
         float error = leftLineTracker.reflectivity() - rightLineTracker.reflectivity();
         drive(speed, error * lineFollowing_kP);
     }
@@ -114,10 +96,10 @@ void followLine (float dist) {
 }
 
 void armUp (bool waitForCompletion = true) {
-    liftMotor.spinFor(forward, 0.8f, rotationUnits::rev, 25, velocityUnits::pct, waitForCompletion);
+    liftMotor.spinFor(forward, 0.75f, rotationUnits::rev, 25, velocityUnits::pct, waitForCompletion);
 }
 void armDown(bool waitForCompletion = true) {
-    liftMotor.spinFor(reverse, 0.8f, rotationUnits::rev, 25, velocityUnits::pct, waitForCompletion);
+    liftMotor.spinFor(reverse, 0.75f, rotationUnits::rev, 25, velocityUnits::pct, waitForCompletion);
 }
 
 // Returns true if RED_BALL is detected and false if not,
@@ -164,25 +146,44 @@ int main() {
     vexcodeInit();
     vexDelay(500); // wait half a second for ultrasonic sensor to initialize
 
-    // armUp();
-
     approachBall(VisionSensor__RED_1);
     intakeBall();
     turn(90);
     approachBall(VisionSensor__BLUE_1);
     intakeBall();
-    turn(-30);
+    turn(-25);
     approachBall(VisionSensor__RED_1);
     intakeBall();
     intakeMotor.spin(forward);
     vexDelay(500);
     intakeMotor.stop(brake);
 
-    // vexDelay(1000);
-    // armDown();
-    // vexDelay(1000);
-    // driveStraight(-4);
+    driveStraight(16);
+    turn(130);
+    driveStraight(6);
 
-    // followLine(48.0f);
-    // liftMotor.rotateFor(1, rotationUnits::rev, );   
+    followLine(3.5, true); // Approach the V-Bucket
+    armUp(); // Hook onto it
+    driveStraight(-8); // Back up to collect yellow ball
+    armDown(); // Put arm back down
+    followLine(4.5, true); // Approach the V-Bucket again
+    armUp(); // Hook onto it
+    intakeMotor.spinFor(5.0f, rotationUnits::rev, 25, velocityUnits::pct, true);
+    armDown();
+    driveStraight(-4);
+    // armUp();
+    // Make sure arm is ALL THE WAY up
+    liftMotor.spinFor(forward, 0.85f, rotationUnits::rev, 25, velocityUnits::pct, true);
+    // this is horrible but it works
+    driveStraight(8, 100);
+    driveStraight(-6, 100);
+    driveStraight(8, 100);
+    driveStraight(-12, 100);
+    turn(-180);
+    
+    followLine(9.3, true);
+    turn(-90);
+    followLine(38);
+    turn(-105);
+    followLine(60);
 }
