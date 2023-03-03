@@ -123,37 +123,31 @@ bool DetectObject(signature &sig) {
     } else return false;
 }
 
-// Uses the vision sensor to line the robot up and approach a ball
-void approachBall (signature &sig) {
+// Uses the vision sensor to line the robot up, drive towards, and intake a ball
+void collectBall (signature &sig) {
     while (DetectObject(sig)) {
         float error_distance = centerX - VisionSensor.largestObject.centerX;
         drive(-intakeDriveSpeed, error_distance *  kP_angle);
         vexDelay(30);
     }
-    leftMotor.stop(brake);
-    rightMotor.stop(brake);
-}
-// Drives the robot towards the ball and intakes it
-void intakeBall () {
+
     driveStraight(-1);
     // It's important that the intake mechanism turns the same amount for each ball,
     // so that the intake paddles are lined up properly
     intakeMotor.spinFor(1.0f, rotationUnits::rev, 50, velocityUnits::pct, false);
     driveStraight(-2);
 }
+
 int main() {
     // Initializing Robot Configuration. DO NOT REMOVE!
     vexcodeInit();
     vexDelay(500); // wait half a second for ultrasonic sensor to initialize
 
-    approachBall(VisionSensor__RED_1);
-    intakeBall();
+    collectBall(VisionSensor__RED_1);
     turn(90);
-    approachBall(VisionSensor__BLUE_1);
-    intakeBall();
+    collectBall(VisionSensor__BLUE_1);
     turn(-25);
-    approachBall(VisionSensor__RED_1);
-    intakeBall();
+    collectBall(VisionSensor__RED_1);
     intakeMotor.spin(forward);
     vexDelay(500);
     intakeMotor.stop(brake);
@@ -166,24 +160,20 @@ int main() {
     armUp(); // Hook onto it
     driveStraight(-8); // Back up to collect yellow ball
     armDown(); // Put arm back down
-    followLine(4.5, true); // Approach the V-Bucket again
+    followLine(3.5, true); // Approach the V-Bucket again
     armUp(); // Hook onto it
-    intakeMotor.spinFor(5.0f, rotationUnits::rev, 25, velocityUnits::pct, true);
+    intakeMotor.spinFor(5.0f, rotationUnits::rev, 100, velocityUnits::pct, true);
     armDown();
-    driveStraight(-4);
-    // armUp();
-    // Make sure arm is ALL THE WAY up
-    liftMotor.spinFor(forward, 0.85f, rotationUnits::rev, 25, velocityUnits::pct, true);
-    // this is horrible but it works
-    driveStraight(8, 100);
-    driveStraight(-6, 100);
-    driveStraight(8, 100);
+    
     driveStraight(-12, 100);
-    turn(-180);
+    turn(200);
     
     followLine(9.3, true);
     turn(-90);
     followLine(38);
     turn(-105);
+    followLine(60);
+
+    // Second auto program
     followLine(60);
 }
