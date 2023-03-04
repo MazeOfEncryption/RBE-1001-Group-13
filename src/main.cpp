@@ -40,13 +40,9 @@ const float kP_angle = 1.0f;
 const float pctSpeed = 50.0f;
 const float intakeDriveSpeed = 130.0f; // RPM
 const float degreesPerInch = 360.0f / wheelCircumference;
-// const float motorCountPerRev = 900.0f;
-// const float countsPerInch = motorCountPerRev * gearRatio / wheelCircumference;
 
 // Function to drive forwards `distance` inches.
 void driveStraight (float distance, float speed = pctSpeed) {
-    // leftMotor.spinFor(forward, gearRatio * distance * degreesPerInch, degrees, false);
-    // rightMotor.spinFor(forward, gearRatio * distance * degreesPerInch, degrees, true);
     leftMotor.spinFor(forward, gearRatio * distance * degreesPerInch, degrees, speed, velocityUnits::pct, false);
     rightMotor.spinFor(forward, gearRatio * distance * degreesPerInch, degrees, speed, velocityUnits::pct, true);
 }
@@ -57,10 +53,6 @@ void turn (float targetDegrees) {
     // Calculate the number of degrees each motor must rotate for the entire robot to rotate `targetDegrees` degrees.
     float rotationDegrees = targetDegrees * gearRatio * wheelTrack / wheelDiameter;
     // Non-blocking so that rightMotor.spinFor() can happen simultaneously
-    // leftMotor.spinFor(forward, rotationDegrees, degrees, false);
-    // rightMotor.spinFor(reverse, rotationDegrees, degrees, true);
-    // leftMotor.resetPosition();
-    // leftmotor.spinTo();
     leftMotor.spinFor(forward, rotationDegrees, degrees, pctSpeed, velocityUnits::pct, false);
     rightMotor.spinFor(reverse, rotationDegrees, degrees, pctSpeed, velocityUnits::pct, true);
 }
@@ -114,11 +106,7 @@ bool DetectObject(signature &sig) {
     std::cout << "x: " << VisionSensor.largestObject.centerX;
     std::cout << " y: " << VisionSensor.largestObject.centerY;
     std::cout << " width: " << VisionSensor.largestObject.width << std::endl;
-    // Brain.Screen.print("Distance: %f", distanceToBall(VisionSensor.largestObject.centerY));
-    // std::cout << VisionSensor.objectCount << std::endl;
     if (VisionSensor.objectCount > 0) {
-        // Return false if ball is out of range (too close or too far away from the vision sensor)
-        // if (VisionSensor.largestObject.centerY < 135 || VisionSensor.largestObject.centerY > 200) return false;
         return true;
     } else return false;
 }
@@ -143,37 +131,52 @@ int main() {
     vexcodeInit();
     vexDelay(500); // wait half a second for ultrasonic sensor to initialize
 
+    /************************
+       First auto program
+    ************************/
+
+    // Colect the 3 balls on the left side of the field
     collectBall(VisionSensor__RED_1);
     turn(90);
     collectBall(VisionSensor__BLUE_1);
     turn(-25);
     collectBall(VisionSensor__RED_1);
+    
+    // Spin the intake motor for half a second to make sure all balls are within the robot
     intakeMotor.spin(forward);
     vexDelay(500);
     intakeMotor.stop(brake);
 
+    // Drive the robot back, turn around, and drive towards the line
     driveStraight(16);
     turn(130);
     driveStraight(6);
 
-    followLine(3.5, true); // Approach the V-Bucket
+    // Follow the line until the V-bucket, using the ultrasonic sensor to stop
+    followLine(3.5, true);
     armUp(); // Hook onto it
     driveStraight(-8); // Back up to collect yellow ball
     armDown(); // Put arm back down
     followLine(3.5, true); // Approach the V-Bucket again
     armUp(); // Hook onto it
+    // Spin the intake motor to score the balls
     intakeMotor.spinFor(5.0f, rotationUnits::rev, 100, velocityUnits::pct, true);
-    armDown();
-    
+    armDown(); // Put the arm back down
+
+    // Drive back and turn the robot around    
     driveStraight(-12, 100);
     turn(200);
     
+    // Follow the line to the wall, using the ultrasonic sensor to stop
     followLine(9.3, true);
+    // Turn, follow the line to the ramp, turn again, and linefollow up the ramp.
     turn(-90);
     followLine(38);
     turn(-105);
     followLine(60);
 
-    // Second auto program
-    followLine(60);
+    /************************
+       Second auto program
+    ************************/
+    // followLine(60); // Follow the line up the ramp
 }
